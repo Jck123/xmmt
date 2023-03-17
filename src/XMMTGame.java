@@ -2,10 +2,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 public class XMMTGame {
     private String name;
     private URL sourceURL;
+    private Path compressedPath;
     private int priorityLevel;
     private int state;
 
@@ -62,6 +64,13 @@ public class XMMTGame {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+    }
+
+    public Path getCompressedPath() {return compressedPath;}
+    public void setCompressedPath(Path newPath) {
+        if (newPath.toFile().isDirectory())
+            throw new IllegalArgumentException("This path is a directory");
+        compressedPath = newPath;
     }
     
     public int getPriorityLevel() {return priorityLevel;}
