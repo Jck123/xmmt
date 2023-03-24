@@ -79,6 +79,11 @@ public class XMMTGame {
     public int getState() {return state;}
     public void setState(int newState) {state = newState;}
 
+    public void deleteLocalFiles() {
+        if (compressedPath != null)
+            compressedPath.toFile().delete();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
