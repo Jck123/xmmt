@@ -4,14 +4,13 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.file.Paths;
 
-public class XMMTDownloadThread extends Thread {
-    private Double progress;
-    private boolean paused;
-    private XMMTGame game;
+public class XMMTDownloadThread extends XMMTThread {
+    public XMMTDownloadThread() {
+        super();
+    }
 
-    public XMMTDownloadThread(XMMTGame inputGame) {
-        game = inputGame;
-        progress = 0.0;
+    public XMMTDownloadThread(XMMTGame g, XMMTEngineInterface e) {
+        super(g, e);
     }
 
     public void run() {
@@ -38,29 +37,10 @@ public class XMMTDownloadThread extends Thread {
             in.close();
             out.close();
             System.out.println(game.getName() + " has been downloaded!");
+            sendCompleteFlag();
         } catch (IOException e) {
             e.printStackTrace();;
             //TODO: Process potential File IO errors
         }
-    }
-
-    public double GetProgess() {
-        return progress;
-    }
-
-    public void pauseThread() {
-        paused = true;
-    }
-
-    public void resumeThread() {
-        paused = false;
-    }
-
-    public boolean paused() {
-        return paused;
-    }
-
-    public XMMTGame getGame() {
-        return game;
     }
 }

@@ -2,38 +2,43 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 
-public class XMMTDownloadEngine implements XMMTEngineInterface{
+public class XMMTThreadEngine<T extends XMMTThread> implements XMMTEngineInterface{
     private PriorityQueue<XMMTGame> inPQueue;
     private PriorityQueue<XMMTGame> outPQueue;
-    private ArrayList<XMMTDownloadThread> processingList;
+    private ArrayList<T> processingList;
     private int DOWNLOAD_LIMIT = 4;
+    private Class<T> clazz;
 
-    public XMMTDownloadEngine() {
+    public XMMTThreadEngine(Class<T> clz) {
         inPQueue = new PriorityQueue<XMMTGame>(new XMMTGameComparator());
         outPQueue = new PriorityQueue<XMMTGame>(new XMMTGameComparator());
-        processingList = new ArrayList<XMMTDownloadThread>();
+        processingList = new ArrayList<T>();
+        clazz = clz;
     }
 
-    public XMMTDownloadEngine(int downLimit) {
+    public XMMTThreadEngine(Class<T> clz, int downLimit) {
         inPQueue = new PriorityQueue<XMMTGame>(new XMMTGameComparator());
         outPQueue = new PriorityQueue<XMMTGame>(new XMMTGameComparator());
-        processingList = new ArrayList<XMMTDownloadThread>();
+        processingList = new ArrayList<T>();
         DOWNLOAD_LIMIT = downLimit;
+        clazz = clz;
     }
 
-    public XMMTDownloadEngine(XMMTGame newGame) {
+    public XMMTThreadEngine(Class<T> clz, XMMTGame newGame) {
         inPQueue = new PriorityQueue<XMMTGame>(new XMMTGameComparator());
         outPQueue = new PriorityQueue<XMMTGame>(new XMMTGameComparator());
-        processingList = new ArrayList<XMMTDownloadThread>();
+        processingList = new ArrayList<T>();
         inPQueue.add(newGame);
+        clazz = clz;
     }
 
-    public XMMTDownloadEngine(XMMTGame newGame, int downLimit) {
+    public XMMTThreadEngine(Class<T> clz, XMMTGame newGame, int downLimit) {
         inPQueue = new PriorityQueue<XMMTGame>(new XMMTGameComparator());
         outPQueue = new PriorityQueue<XMMTGame>(new XMMTGameComparator());
-        processingList = new ArrayList<XMMTDownloadThread>();
+        processingList = new ArrayList<T>();
         DOWNLOAD_LIMIT = downLimit;
         inPQueue.add(newGame);
+        clazz = clz;
     }
 
     public void start() {
@@ -41,13 +46,13 @@ public class XMMTDownloadEngine implements XMMTEngineInterface{
     }
 
     public void pauseAll() {
-        for(XMMTDownloadThread t : processingList) {
+        for(T t : processingList) {
             t.pauseThread();
         }
     }
 
     public boolean pause(XMMTGame g) {
-        for(XMMTDownloadThread t : processingList) {
+        for(XMMTThread t : processingList) {
             if (t.getGame().equals(g)) {
                 t.pauseThread();
                 return true;
@@ -57,7 +62,7 @@ public class XMMTDownloadEngine implements XMMTEngineInterface{
     }
 
     public void stopAll() {
-        for(XMMTDownloadThread t : processingList) {
+        for(XMMTThread t : processingList) {
             t.interrupt();
             t.getGame().deleteLocalFiles();
             inPQueue.add(t.getGame());
@@ -78,7 +83,7 @@ public class XMMTDownloadEngine implements XMMTEngineInterface{
     }
 
     public boolean removeFromQueue(XMMTGame game) {
-        for(XMMTDownloadThread t : processingList) {
+        for(XMMTThread t : processingList) {
             XMMTGame g = t.getGame();
             if (g.equals(game)) {
                 t.interrupt();
@@ -95,14 +100,14 @@ public class XMMTDownloadEngine implements XMMTEngineInterface{
 
     public HashMap<XMMTGame, Double> GetProgress(){
         HashMap<XMMTGame, Double> progress = new HashMap<XMMTGame, Double>();
-        for(XMMTDownloadThread t : processingList) {
+        for(XMMTThread t : processingList) {
             progress.put(t.getGame(), t.GetProgess());
         }
         return progress;
     }
 
     public double GetProgress(XMMTGame game) {
-        for(XMMTDownloadThread t : processingList) {
+        for(XMMTThread t : processingList) {
             if (t.getGame().equals(game)) {
                 return t.GetProgess();
             }
@@ -117,9 +122,13 @@ public class XMMTDownloadEngine implements XMMTEngineInterface{
 
     public void refresh() {
         while(!inPQueue.isEmpty() && processingList.size() < DOWNLOAD_LIMIT) {
-            XMMTDownloadThread t = new XMMTDownloadThread(inPQueue.poll(), this);
-            processingList.add(t);
-            t.start();
+            try {
+                T t = clazz.getDeclaredConstructor(XMMTGame.class, XMMTEngineInterface.class).newInstance(inPQueue.poll(), this);
+                processingList.add(t);
+                t.start();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
