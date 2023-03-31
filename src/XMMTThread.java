@@ -14,6 +14,8 @@ public abstract class XMMTThread extends Thread{
         engine = e;
     }
     
+    public abstract void run();
+    
     public final double GetProgess() {
         return progress;
     }
