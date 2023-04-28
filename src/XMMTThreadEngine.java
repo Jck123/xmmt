@@ -8,12 +8,14 @@ public class XMMTThreadEngine<T extends XMMTThread> implements XMMTEngineInterfa
     private ArrayList<T> processingList;
     private int DOWNLOAD_LIMIT = 4;
     private Class<T> clazz;
+    private String destPath;
 
     public XMMTThreadEngine(Class<T> clz) {
         inPQueue = new PriorityQueue<XMMTGame>(new XMMTGameComparator());
         outPQueue = new PriorityQueue<XMMTGame>(new XMMTGameComparator());
         processingList = new ArrayList<T>();
         clazz = clz;
+        destPath = "";
     }
 
     public XMMTThreadEngine(Class<T> clz, int downLimit) {
@@ -22,6 +24,16 @@ public class XMMTThreadEngine<T extends XMMTThread> implements XMMTEngineInterfa
         processingList = new ArrayList<T>();
         DOWNLOAD_LIMIT = downLimit;
         clazz = clz;
+        destPath = "";
+    }
+
+    public XMMTThreadEngine(Class<T> clz, int downLimit, String path) {
+        inPQueue = new PriorityQueue<XMMTGame>(new XMMTGameComparator());
+        outPQueue = new PriorityQueue<XMMTGame>(new XMMTGameComparator());
+        processingList = new ArrayList<T>();
+        DOWNLOAD_LIMIT = downLimit;
+        clazz = clz;
+        destPath = path;
     }
 
     public XMMTThreadEngine(Class<T> clz, XMMTGame newGame) {
@@ -30,6 +42,16 @@ public class XMMTThreadEngine<T extends XMMTThread> implements XMMTEngineInterfa
         processingList = new ArrayList<T>();
         inPQueue.add(newGame);
         clazz = clz;
+        destPath = "";
+    }
+
+    public XMMTThreadEngine(Class<T> clz, XMMTGame newGame, String path) {
+        inPQueue = new PriorityQueue<XMMTGame>(new XMMTGameComparator());
+        outPQueue = new PriorityQueue<XMMTGame>(new XMMTGameComparator());
+        processingList = new ArrayList<T>();
+        inPQueue.add(newGame);
+        clazz = clz;
+        destPath = path;
     }
 
     public XMMTThreadEngine(Class<T> clz, XMMTGame newGame, int downLimit) {
@@ -39,6 +61,17 @@ public class XMMTThreadEngine<T extends XMMTThread> implements XMMTEngineInterfa
         DOWNLOAD_LIMIT = downLimit;
         inPQueue.add(newGame);
         clazz = clz;
+        destPath = "";
+    }
+
+    public XMMTThreadEngine(Class<T> clz, XMMTGame newGame, String path, int downLimit) {
+        inPQueue = new PriorityQueue<XMMTGame>(new XMMTGameComparator());
+        outPQueue = new PriorityQueue<XMMTGame>(new XMMTGameComparator());
+        processingList = new ArrayList<T>();
+        DOWNLOAD_LIMIT = downLimit;
+        inPQueue.add(newGame);
+        clazz = clz;
+        destPath = path;
     }
 
     public void start() {
@@ -64,7 +97,7 @@ public class XMMTThreadEngine<T extends XMMTThread> implements XMMTEngineInterfa
     public void stopAll() {
         for(XMMTThread t : processingList) {
             t.interrupt();
-            t.getGame().deleteLocalFiles();
+            t.getGame().deleteAllLocalFiles();
             inPQueue.add(t.getGame());
         }
         processingList.clear();
@@ -86,9 +119,10 @@ public class XMMTThreadEngine<T extends XMMTThread> implements XMMTEngineInterfa
         for(XMMTThread t : processingList) {
             XMMTGame g = t.getGame();
             if (g.equals(game)) {
+                
                 t.interrupt();
                 processingList.remove(t);
-                g.deleteLocalFiles();
+                g.deleteAllLocalFiles();
                 this.refresh();
                 return true;
             }
@@ -123,7 +157,7 @@ public class XMMTThreadEngine<T extends XMMTThread> implements XMMTEngineInterfa
     public void refresh() {
         while(!inPQueue.isEmpty() && processingList.size() < DOWNLOAD_LIMIT) {
             try {
-                T t = clazz.getDeclaredConstructor(XMMTGame.class, XMMTEngineInterface.class).newInstance(inPQueue.poll(), this);
+                T t = clazz.getDeclaredConstructor(XMMTGame.class, XMMTEngineInterface.class, String.class).newInstance(inPQueue.poll(), this, destPath);
                 processingList.add(t);
                 t.start();
             } catch (Exception e) {

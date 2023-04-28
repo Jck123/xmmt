@@ -3,15 +3,24 @@ public abstract class XMMTThread extends Thread{
     boolean paused = false;
     XMMTGame game;
     XMMTEngineInterface engine;
+    String destPath;
 
     public XMMTThread() {
         game = null;
         engine = null;
+        destPath = "";
     }
 
     public XMMTThread(XMMTGame g, XMMTEngineInterface e) {
         game = g;
         engine = e;
+        destPath = "";
+    }
+
+    public XMMTThread(XMMTGame g, XMMTEngineInterface e, String p) {
+        game = g;
+        engine = e;
+        destPath = p;
     }
     
     public abstract void run();
@@ -34,6 +43,10 @@ public abstract class XMMTThread extends Thread{
 
     public final XMMTGame getGame() {
         return game;
+    }
+
+    public final void setDestPath(String newPath) {
+        destPath = newPath;
     }
 
     public final void sendCompleteFlag() {

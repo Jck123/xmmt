@@ -13,10 +13,14 @@ public class XMMTDownloadThread extends XMMTThread {
         super(g, e);
     }
 
+    public XMMTDownloadThread(XMMTGame g, XMMTEngineInterface e, String p) {
+        super(g, e, p);
+    }
+
     public void run() {
         try (BufferedInputStream in = new BufferedInputStream(game.getURL().openStream());
-            FileOutputStream out = new FileOutputStream(game.getName())) {
-            game.setCompressedPath(Paths.get(game.getName()));
+            FileOutputStream out = new FileOutputStream(destPath + game.getName())) {
+            game.setCompressedPath(Paths.get(destPath + game.getName()));
             byte dataBuffer[] = new byte[1024];
             HttpURLConnection httpConnection = (HttpURLConnection)game.getURL().openConnection();
             long totalFileSize = httpConnection.getContentLengthLong();

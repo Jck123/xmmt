@@ -1,3 +1,4 @@
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -8,19 +9,17 @@ public class XMMTGame {
     private String name;
     private URL sourceURL;
     private Path compressedPath;
+    private Path decompressedPath;
     private int priorityLevel;
-    private int state;
 
     public XMMTGame() {
         name = "";
         priorityLevel = 0;
-        state = 0;
     }
 
     public XMMTGame(String newName, String strURL) {
         name = newName;
         priorityLevel = 0;
-        state = 0;
 
         try {
             sourceURL = new URL(strURL);
@@ -32,7 +31,6 @@ public class XMMTGame {
     public XMMTGame(String newName, String strURL, int priLvl) {
         name = newName;
         priorityLevel = priLvl;
-        state = 0;
 
         try {
             sourceURL = new URL(strURL);
@@ -43,7 +41,6 @@ public class XMMTGame {
 
     public XMMTGame(String strURL) {
         priorityLevel = 0;
-        state = 0;
 
         try {
             sourceURL = new URL(strURL);
@@ -72,16 +69,30 @@ public class XMMTGame {
             throw new IllegalArgumentException("This path is a directory");
         compressedPath = newPath;
     }
+
+    public Path getDecompressedPath() {return decompressedPath;}
+    public void setDecompressedPath(Path newPath) {
+        decompressedPath = newPath;
+    }
     
     public int getPriorityLevel() {return priorityLevel;}
     public void setPriorityLevel(int newNum) {priorityLevel = newNum;}
 
-    public int getState() {return state;}
-    public void setState(int newState) {state = newState;}
-
-    public void deleteLocalFiles() {
+    public void deleteCompressedFile() {
         if (compressedPath != null)
             compressedPath.toFile().delete();
+    }
+
+    public void deleteDecompressedFiles() {
+        if (decompressedPath != null)
+            for (File tempF : decompressedPath.toFile().listFiles())
+                if(!tempF.isDirectory())
+                    tempF.delete();
+    }
+
+    public void deleteAllLocalFiles() {
+        deleteCompressedFile();
+        deleteDecompressedFiles();
     }
 
     @Override
