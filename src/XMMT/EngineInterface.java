@@ -1,3 +1,4 @@
-public interface XMMTEngineInterface {
+package XMMT;
+public interface EngineInterface {
     public void completeDownload(XMMTThread t);
 }

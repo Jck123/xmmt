@@ -1,8 +1,9 @@
+package XMMT;
 public abstract class XMMTThread extends Thread{
     Double progress = 0.0;
     boolean paused = false;
-    XMMTGame game;
-    XMMTEngineInterface engine;
+    Game game;
+    EngineInterface engine;
     String destPath;
 
     public XMMTThread() {
@@ -11,13 +12,13 @@ public abstract class XMMTThread extends Thread{
         destPath = "";
     }
 
-    public XMMTThread(XMMTGame g, XMMTEngineInterface e) {
+    public XMMTThread(Game g, EngineInterface e) {
         game = g;
         engine = e;
         destPath = "";
     }
 
-    public XMMTThread(XMMTGame g, XMMTEngineInterface e, String p) {
+    public XMMTThread(Game g, EngineInterface e, String p) {
         game = g;
         engine = e;
         destPath = p;
@@ -41,7 +42,7 @@ public abstract class XMMTThread extends Thread{
         return paused;
     }
 
-    public final XMMTGame getGame() {
+    public final Game getGame() {
         return game;
     }
 

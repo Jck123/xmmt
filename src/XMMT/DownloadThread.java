@@ -1,19 +1,20 @@
+package XMMT;
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.file.Paths;
 
-public class XMMTDownloadThread extends XMMTThread {
-    public XMMTDownloadThread() {
+public class DownloadThread extends XMMTThread {
+    public DownloadThread() {
         super();
     }
 
-    public XMMTDownloadThread(XMMTGame g, XMMTEngineInterface e) {
+    public DownloadThread(Game g, EngineInterface e) {
         super(g, e);
     }
 
-    public XMMTDownloadThread(XMMTGame g, XMMTEngineInterface e, String p) {
+    public DownloadThread(Game g, EngineInterface e, String p) {
         super(g, e, p);
     }
 
@@ -32,7 +33,7 @@ public class XMMTDownloadThread extends XMMTThread {
                 downloaded += bytesRead;
                 while(paused) {
                     try {
-                        Thread.sleep(1000);
+                        XMMTThread.sleep(1000);
                     } catch (InterruptedException e) {
                         //TODO: Figure out what happens if interrupted
                     }

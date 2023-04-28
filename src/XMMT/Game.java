@@ -1,3 +1,4 @@
+package XMMT;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -5,19 +6,19 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
-public class XMMTGame {
+public class Game {
     private String name;
     private URL sourceURL;
     private Path compressedPath;
     private Path decompressedPath;
     private int priorityLevel;
 
-    public XMMTGame() {
+    public Game() {
         name = "";
         priorityLevel = 0;
     }
 
-    public XMMTGame(String newName, String strURL) {
+    public Game(String newName, String strURL) {
         name = newName;
         priorityLevel = 0;
 
@@ -28,7 +29,7 @@ public class XMMTGame {
         }
     }
 
-    public XMMTGame(String newName, String strURL, int priLvl) {
+    public Game(String newName, String strURL, int priLvl) {
         name = newName;
         priorityLevel = priLvl;
 
@@ -39,7 +40,7 @@ public class XMMTGame {
         }
     }
 
-    public XMMTGame(String strURL) {
+    public Game(String strURL) {
         priorityLevel = 0;
 
         try {
@@ -99,7 +100,7 @@ public class XMMTGame {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
-        XMMTGame temp = (XMMTGame) o;
+        Game temp = (Game) o;
         return temp.getURL() == this.getURL();
     }
 }

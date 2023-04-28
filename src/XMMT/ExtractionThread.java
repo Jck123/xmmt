@@ -1,3 +1,4 @@
+package XMMT;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -6,16 +7,16 @@ import java.nio.file.Paths;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 
-public class XMMTExtractionThread extends XMMTThread {
-    public XMMTExtractionThread() {
+public class ExtractionThread extends XMMTThread {
+    public ExtractionThread() {
         super();
     }
 
-    public XMMTExtractionThread(XMMTGame g, XMMTEngineInterface e) {
+    public ExtractionThread(Game g, EngineInterface e) {
         super(g, e);
     }
 
-    public XMMTExtractionThread(XMMTGame g, XMMTEngineInterface e, String p) {
+    public ExtractionThread(Game g, EngineInterface e, String p) {
         super(g, e, p);
     }
 
