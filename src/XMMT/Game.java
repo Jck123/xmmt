@@ -94,10 +94,13 @@ public class Game {
     }
 
     public void deleteDecompressedFiles() {
-        if (decompressedPath != null)
+        if (decompressedPath != null) {
             for (File tempF : decompressedPath.listFiles())
                 if(!tempF.isDirectory())
                     tempF.delete();
+            decompressedPath.delete();
+        }
+
     }
 
     public void deleteAllLocalFiles() {
