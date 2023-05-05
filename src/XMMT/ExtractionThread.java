@@ -2,7 +2,6 @@ package XMMT;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Paths;
 
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
@@ -22,11 +21,11 @@ public class ExtractionThread extends XMMTThread {
 
     public void run() {
         try {
-            SevenZFile sevenZFile = new SevenZFile(game.getCompressedPath().toFile());
+            SevenZFile sevenZFile = new SevenZFile(game.getCompressedPath());
             SevenZArchiveEntry entry;
             double totalEntries = (double) sevenZFile.getEntries().spliterator().getExactSizeIfKnown();
             double currentEntryCount = 0.0;
-            game.setDecompressedPath(Paths.get(destPath + game.getName()));
+            game.setDecompressedPath(destPath + game.getName());
             while ((entry = sevenZFile.getNextEntry()) != null) {
                 if (entry.isDirectory())
                     continue;

@@ -3,7 +3,8 @@ import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.nio.file.Paths;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 public class DownloadThread extends XMMTThread {
     public DownloadThread() {
@@ -19,9 +20,10 @@ public class DownloadThread extends XMMTThread {
     }
 
     public void run() {
+        String gameFileName = URLDecoder.decode(game.getURL().toString().substring(game.getURL().toString().lastIndexOf("/") + 1), StandardCharsets.UTF_8);
         try (BufferedInputStream in = new BufferedInputStream(game.getURL().openStream());
-            FileOutputStream out = new FileOutputStream(destPath + game.getName())) {
-            game.setCompressedPath(Paths.get(destPath + game.getName()));
+            FileOutputStream out = new FileOutputStream(destPath + gameFileName)) {
+            game.setCompressedPath(destPath + gameFileName);
             byte dataBuffer[] = new byte[1024];
             HttpURLConnection httpConnection = (HttpURLConnection)game.getURL().openConnection();
             long totalFileSize = httpConnection.getContentLengthLong();
