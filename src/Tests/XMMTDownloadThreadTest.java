@@ -71,7 +71,7 @@ public class XMMTDownloadThreadTest {
             dT.join();
         g1.deleteCompressedFile();
 
-        if (!dT.isAlive()) {
+        if (!dT.isAlive() && !g1.getCompressedPath().exists()) {
             System.out.println("interrupt():\t\tPASSED");
             passCount++;
         } else {

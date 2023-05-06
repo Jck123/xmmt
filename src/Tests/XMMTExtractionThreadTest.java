@@ -77,7 +77,7 @@ public class XMMTExtractionThreadTest {
             eT.join();
         g1.deleteDecompressedFiles();
 
-        if (!eT.isAlive()) {
+        if (!eT.isAlive() && !g1.getDecompressedPath().exists() && g1.getCompressedPath().exists()) {
             System.out.println("interrupt():\t\tPASSED");
             passCount++;
         } else {
