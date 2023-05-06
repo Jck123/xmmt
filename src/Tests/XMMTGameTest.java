@@ -158,9 +158,9 @@ public class XMMTGameTest {
             testFile.delete();
         }
         
-        testFile = new File("test/game.txt");
+        testFile = new File("test/test1/game.txt");
         try {
-            testFile.getParentFile().mkdir();
+            testFile.getParentFile().mkdirs();
             testFile.createNewFile();
         } catch (Exception e) {
             e.printStackTrace();
