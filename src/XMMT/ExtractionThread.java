@@ -26,10 +26,11 @@ public class ExtractionThread extends XMMTThread {
             double totalEntries = (double) sevenZFile.getEntries().spliterator().getExactSizeIfKnown();
             double currentEntryCount = 0.0;
             game.setDecompressedPath(destPath + game.getName());
+            game.getDecompressedPath().mkdir();
             while ((entry = sevenZFile.getNextEntry()) != null) {
                 if (entry.isDirectory())
                     continue;
-                File curfile = new File(destPath + entry.getName());
+                File curfile = new File(game.getDecompressedPath() + "/" + entry.getName());
                 File parent = curfile.getParentFile();
                 if (!parent.exists())
                     parent.mkdirs();
@@ -40,8 +41,17 @@ public class ExtractionThread extends XMMTThread {
                 out.close();
                 currentEntryCount++;
                 progress = (currentEntryCount / totalEntries) * 100;
+                while(paused) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        //TODO: Figure out what happens if interrupted
+                    }
+                }
+                if(isInterrupted()) break;
             }
-            sendCompleteFlag();
+            if (!isInterrupted())
+                sendCompleteFlag();
         } catch (IOException e) {
             //TODO:Figure out what to do here
             e.printStackTrace();
