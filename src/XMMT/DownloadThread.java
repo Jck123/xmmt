@@ -37,7 +37,8 @@ public class DownloadThread extends XMMTThread {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
-                        //TODO: Figure out what happens if interrupted
+                        game.deleteCompressedFile();
+                        sendFailFlag();
                     }
                 }
                 if(isInterrupted()) break;
@@ -47,10 +48,13 @@ public class DownloadThread extends XMMTThread {
             if (!interrupted()) {
                 System.out.println(game.getName() + " has been downloaded!");
                 sendCompleteFlag();
+            } else {
+                game.deleteCompressedFile();
+                sendFailFlag();
             }
         } catch (IOException e) {
-            e.printStackTrace();;
-            //TODO: Process potential File IO errors
+            game.deleteCompressedFile();
+            sendFailFlag();
         }
     }
 }

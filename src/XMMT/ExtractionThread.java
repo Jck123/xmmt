@@ -45,16 +45,21 @@ public class ExtractionThread extends XMMTThread {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
-                        //TODO: Figure out what happens if interrupted
+                        game.deleteDecompressedFiles();
+                        sendFailFlag();
                     }
                 }
                 if(isInterrupted()) break;
             }
             if (!isInterrupted())
                 sendCompleteFlag();
+            else {
+                game.deleteDecompressedFiles();
+                sendFailFlag();
+            }
         } catch (IOException e) {
-            //TODO:Figure out what to do here
-            e.printStackTrace();
+            game.deleteDecompressedFiles();
+            sendFailFlag();
         }
     }
 }

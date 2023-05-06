@@ -10,6 +10,7 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
     private int DOWNLOAD_LIMIT = 4;
     private Class<T> clazz;
     private String destPath;
+    private boolean paused = true;
 
     public ThreadEngine(Class<T> clz) {
         inPQueue = new PriorityQueue<Game>(new GameComparator());
@@ -76,10 +77,12 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
     }
 
     public void start() {
+        paused = false;
         refresh();
     }
 
     public void pauseAll() {
+        paused = true;
         for(T t : processingList) {
             t.pauseThread();
         }
@@ -98,7 +101,6 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
     public void stopAll() {
         for(XMMTThread t : processingList) {
             t.interrupt();
-            t.getGame().deleteAllLocalFiles();
             inPQueue.add(t.getGame());
         }
         processingList.clear();
@@ -120,10 +122,7 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
         for(XMMTThread t : processingList) {
             Game g = t.getGame();
             if (g.equals(game)) {
-                
                 t.interrupt();
-                processingList.remove(t);
-                g.deleteAllLocalFiles();
                 this.refresh();
                 return true;
             }
@@ -167,10 +166,15 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
         }
     }
 
-    public void completeDownload(XMMTThread t) {
+    public void completeProcess(XMMTThread t) {
         Game g = t.getGame();
         processingList.remove(t);
         outPQueue.add(g);
+        refresh();
+    }
+
+    public void failProcess(XMMTThread t) {
+        processingList.remove(t);
         refresh();
     }
 }

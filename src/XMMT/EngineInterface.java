@@ -1,4 +1,5 @@
 package XMMT;
 public interface EngineInterface {
-    public void completeDownload(XMMTThread t);
+    public void completeProcess(XMMTThread t);
+    public void failProcess(XMMTThread t);
 }

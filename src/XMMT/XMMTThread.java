@@ -51,6 +51,10 @@ public abstract class XMMTThread extends Thread{
     }
 
     public final void sendCompleteFlag() {
-        engine.completeDownload(this);
+        engine.completeProcess(this);
+    }
+
+    public final void sendFailFlag() {
+        engine.failProcess(this);
     }
 }
