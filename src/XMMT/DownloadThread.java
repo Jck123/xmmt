@@ -35,7 +35,7 @@ public class DownloadThread extends XMMTThread {
                 downloaded += bytesRead;
                 while(paused) {
                     try {
-                        XMMTThread.sleep(1000);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         //TODO: Figure out what happens if interrupted
                     }
