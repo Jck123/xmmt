@@ -67,7 +67,8 @@ public class XMMTDownloadThreadTest {
         }
 
         dT.interrupt();
-        dT.join();
+        if (dT.isAlive())
+            dT.join();
         g1.deleteCompressedFile();
 
         if (!dT.isAlive()) {
