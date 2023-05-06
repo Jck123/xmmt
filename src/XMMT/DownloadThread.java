@@ -40,11 +40,14 @@ public class DownloadThread extends XMMTThread {
                         //TODO: Figure out what happens if interrupted
                     }
                 }
+                if(isInterrupted()) break;
             }
             in.close();
             out.close();
-            System.out.println(game.getName() + " has been downloaded!");
-            sendCompleteFlag();
+            if (!interrupted()) {
+                System.out.println(game.getName() + " has been downloaded!");
+                sendCompleteFlag();
+            }
         } catch (IOException e) {
             e.printStackTrace();;
             //TODO: Process potential File IO errors
