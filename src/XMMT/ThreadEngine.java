@@ -9,7 +9,7 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
     private ArrayList<T> processingList;
     private int DOWNLOAD_LIMIT = 4;
     private Class<T> clazz;
-    private String destPath;
+    private String[] args;
     private boolean paused = true;
     private boolean joined = false;
 
@@ -18,7 +18,7 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
         outPQueue = new PriorityQueue<Game>(new GameComparator());
         processingList = new ArrayList<T>();
         clazz = clz;
-        destPath = "";
+        args = null;
     }
 
     public ThreadEngine(Class<T> clz, int downLimit) {
@@ -27,16 +27,16 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
         processingList = new ArrayList<T>();
         DOWNLOAD_LIMIT = downLimit;
         clazz = clz;
-        destPath = "";
+        args = null;
     }
 
-    public ThreadEngine(Class<T> clz, int downLimit, String path) {
+    public ThreadEngine(Class<T> clz, int downLimit, String... a) {
         inPQueue = new PriorityQueue<Game>(new GameComparator());
         outPQueue = new PriorityQueue<Game>(new GameComparator());
         processingList = new ArrayList<T>();
         DOWNLOAD_LIMIT = downLimit;
         clazz = clz;
-        destPath = path;
+        args = a;
     }
 
     public ThreadEngine(Class<T> clz, Game newGame) {
@@ -45,16 +45,16 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
         processingList = new ArrayList<T>();
         inPQueue.add(newGame);
         clazz = clz;
-        destPath = "";
+        args = null;
     }
 
-    public ThreadEngine(Class<T> clz, Game newGame, String path) {
+    public ThreadEngine(Class<T> clz, Game newGame, String... a) {
         inPQueue = new PriorityQueue<Game>(new GameComparator());
         outPQueue = new PriorityQueue<Game>(new GameComparator());
         processingList = new ArrayList<T>();
         inPQueue.add(newGame);
         clazz = clz;
-        destPath = path;
+        args = a;
     }
 
     public ThreadEngine(Class<T> clz, Game newGame, int downLimit) {
@@ -64,17 +64,17 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
         DOWNLOAD_LIMIT = downLimit;
         inPQueue.add(newGame);
         clazz = clz;
-        destPath = "";
+        args = null;
     }
 
-    public ThreadEngine(Class<T> clz, Game newGame, String path, int downLimit) {
+    public ThreadEngine(Class<T> clz, Game newGame, int downLimit, String... a) {
         inPQueue = new PriorityQueue<Game>(new GameComparator());
         outPQueue = new PriorityQueue<Game>(new GameComparator());
         processingList = new ArrayList<T>();
         DOWNLOAD_LIMIT = downLimit;
         inPQueue.add(newGame);
         clazz = clz;
-        destPath = path;
+        args = a;
     }
 
     public void startAll() {
@@ -179,7 +179,11 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
             return;
         while(!inPQueue.isEmpty() && processingList.size() < DOWNLOAD_LIMIT) {
             try {
-                T t = clazz.getDeclaredConstructor(Game.class, EngineInterface.class, String.class).newInstance(inPQueue.poll(), this, destPath);
+                T t = null;
+                if (args == null)
+                    t = clazz.getDeclaredConstructor(Game.class, EngineInterface.class).newInstance(inPQueue.poll(), this);
+                else
+                    t = clazz.getDeclaredConstructor(Game.class, EngineInterface.class, String[].class).newInstance(inPQueue.poll(), this, args);
                 processingList.add(t);
                 t.start();
             } catch (Exception e) {
