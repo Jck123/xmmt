@@ -1,5 +1,6 @@
 package XMMT;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -13,13 +14,23 @@ public class DownloadThread extends XMMTThread {
 
     public DownloadThread(Game g, EngineInterface e) {
         super(g, e);
+        super.setArgs("./");
     }
 
-    public DownloadThread(Game g, EngineInterface e, String p) {
-        super(g, e, p);
+    public DownloadThread(Game g, EngineInterface e, String... a) {
+        super(g, e, a);
+        File dirChecker = new File(args[0]);
+        if (!dirChecker.exists() || args.length > 1)
+            throw new IllegalArgumentException();
     }
 
     public void run() {
+        String destPath;
+            if (args.length == 0)
+                destPath = "./";
+            else 
+                destPath = args[0];
+
         String gameFileName = URLDecoder.decode(game.getURL().toString().substring(game.getURL().toString().lastIndexOf("/") + 1), StandardCharsets.UTF_8);
         try (BufferedInputStream in = new BufferedInputStream(game.getURL().openStream());
             FileOutputStream out = new FileOutputStream(destPath + gameFileName)) {

@@ -13,14 +13,24 @@ public class ExtractionThread extends XMMTThread {
 
     public ExtractionThread(Game g, EngineInterface e) {
         super(g, e);
+        super.setArgs("./");
     }
 
-    public ExtractionThread(Game g, EngineInterface e, String p) {
-        super(g, e, p);
+    public ExtractionThread(Game g, EngineInterface e, String... a) {
+        super(g, e, a);
+        File dirChecker = new File(args[0]);
+        if (!dirChecker.exists() || args.length > 1)
+            throw new IllegalArgumentException();
     }
 
     public void run() {
         try {
+            String destPath;
+            if (args.length == 0)
+                destPath = "./";
+            else 
+                destPath = args[0];
+
             SevenZFile sevenZFile = new SevenZFile(game.getCompressedPath());
             SevenZArchiveEntry entry;
             double totalEntries = (double) sevenZFile.getEntries().spliterator().getExactSizeIfKnown();
