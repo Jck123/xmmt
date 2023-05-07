@@ -11,6 +11,7 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
     private Class<T> clazz;
     private String destPath;
     private boolean paused = true;
+    private boolean joined = false;
 
     public ThreadEngine(Class<T> clz) {
         inPQueue = new PriorityQueue<Game>(new GameComparator());
@@ -76,9 +77,22 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
         destPath = path;
     }
 
-    public void start() {
+    public void startAll() {
         paused = false;
+        for(T t : processingList) {
+            t.resumeThread();
+        }
         refresh();
+    }
+
+    public boolean start(Game g) {
+        for(XMMTThread t : processingList) {
+            if (t.getGame().equals(g)) {
+                t.resumeThread();
+                return true;
+            }
+        }
+        return false;
     }
 
     public void pauseAll() {
@@ -99,6 +113,7 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
     }
 
     public void stopAll() {
+        paused = true;
         for(XMMTThread t : processingList) {
             t.interrupt();
             inPQueue.add(t.getGame());
@@ -132,6 +147,11 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
         return rc;
     }
 
+    public void clearAll() {
+        stopAll();
+        inPQueue.clear();
+    }
+
     public HashMap<Game, Double> GetProgress(){
         HashMap<Game, Double> progress = new HashMap<Game, Double>();
         for(XMMTThread t : processingList) {
@@ -155,6 +175,8 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
     }
 
     public void refresh() {
+        if (paused)
+            return;
         while(!inPQueue.isEmpty() && processingList.size() < DOWNLOAD_LIMIT) {
             try {
                 T t = clazz.getDeclaredConstructor(Game.class, EngineInterface.class, String.class).newInstance(inPQueue.poll(), this, destPath);
@@ -166,15 +188,45 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
         }
     }
 
+    public void join() throws InterruptedException{
+        joined = true;
+        while (!processingList.isEmpty() && joined) {
+            Thread.sleep(1000);
+        }
+    }
+
+    public Game poll() {
+        return outPQueue.poll();
+    }
+
+    public Game peek() {
+        return outPQueue.peek();
+    }
+
     public void completeProcess(XMMTThread t) {
         Game g = t.getGame();
         processingList.remove(t);
         outPQueue.add(g);
         refresh();
+        joined = false;
     }
 
     public void failProcess(XMMTThread t) {
         processingList.remove(t);
         refresh();
+        joined = false;
+    }
+
+    public void setPriorityLevel(Game g, int priLvl) {
+        if (g == null)
+            return;
+        g.setPriorityLevel(priLvl);
+        if (inPQueue.contains(g)) {
+            inPQueue.remove(g);
+            inPQueue.add(g);
+        } else if (outPQueue.contains(g)) {
+            outPQueue.remove(g);
+            outPQueue.add(g);
+        }
     }
 }
