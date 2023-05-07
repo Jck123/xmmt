@@ -19,17 +19,20 @@ public class DownloadThread extends XMMTThread {
 
     public DownloadThread(Game g, EngineInterface e, String... a) {
         super(g, e, a);
-        File dirChecker = new File(args[0]);
-        if (!dirChecker.exists() || args.length > 1)
+        if (args.length > 1)
             throw new IllegalArgumentException();
     }
 
     public void run() {
         String destPath;
-            if (args.length == 0)
-                destPath = "./";
-            else 
-                destPath = args[0];
+        if (args.length == 0)
+            destPath = "./";
+        else 
+            destPath = args[0];
+
+        File dirTester = new File(destPath);
+        if (!dirTester.exists())
+            dirTester.mkdirs();
 
         String gameFileName = URLDecoder.decode(game.getURL().toString().substring(game.getURL().toString().lastIndexOf("/") + 1), StandardCharsets.UTF_8);
         try (BufferedInputStream in = new BufferedInputStream(game.getURL().openStream());

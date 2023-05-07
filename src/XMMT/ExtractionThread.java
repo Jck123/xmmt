@@ -18,8 +18,7 @@ public class ExtractionThread extends XMMTThread {
 
     public ExtractionThread(Game g, EngineInterface e, String... a) {
         super(g, e, a);
-        File dirChecker = new File(args[0]);
-        if (!dirChecker.exists() || args.length > 1)
+        if (args.length > 1)
             throw new IllegalArgumentException();
     }
 
@@ -30,6 +29,10 @@ public class ExtractionThread extends XMMTThread {
                 destPath = "./";
             else 
                 destPath = args[0];
+
+            File dirTester = new File(destPath);
+            if (!dirTester.exists())
+                dirTester.mkdirs();
 
             SevenZFile sevenZFile = new SevenZFile(game.getCompressedPath());
             SevenZArchiveEntry entry;
