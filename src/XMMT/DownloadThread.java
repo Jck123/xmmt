@@ -46,7 +46,6 @@ public class DownloadThread extends XMMTThread {
             in.close();
             out.close();
             if (!interrupted()) {
-                System.out.println(game.getName() + " has been downloaded!");
                 sendCompleteFlag();
             } else {
                 game.deleteCompressedFile();
