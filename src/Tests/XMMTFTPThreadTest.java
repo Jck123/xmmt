@@ -12,13 +12,21 @@ import XMMT.FTPThread;
 import XMMT.ThreadEngine;
 
 public class XMMTFTPThreadTest {
+    private static int passCount = 0;
+    public static int totalPasses = 7;
+    private static boolean verbose = false;
+
+    public static int runTests(boolean v) throws InterruptedException, IOException {
+        verbose = v;
+        main(null);
+        return passCount;
+    }
     public static void main(String[] args) throws InterruptedException, IOException {
         final String XBOX_IP = "10.42.0.2";
         final String XBOX_USER = "xbox";
         final String XBOX_PASS = "xbox";
         final String XBOX_DIR = "/F/Games/";
         
-        int passCount = 0;
         FTPClient client = new FTPClient();
         
         try {
@@ -28,6 +36,7 @@ public class XMMTFTPThreadTest {
         } catch (Exception e) {
             System.out.println("Failed to connect to FTP Client");
             System.out.println("Please make sure the connection details are accurate");
+            return;
         }
 
         Game g1 = new Game("https://archive.org/download/xbox_eng_romset/AMF%20Bowling%202004%20%5B%21%5D.7z");
@@ -37,7 +46,8 @@ public class XMMTFTPThreadTest {
         FTPThread fT = new FTPThread(g1, fe, XBOX_IP, XBOX_USER, XBOX_PASS, XBOX_DIR);
         FTPThread fT2 = new FTPThread(g1, fe, XBOX_IP, XBOX_USER, XBOX_PASS);
 
-        System.out.println("Downloading and extracting game to test with, please hold...");
+        if (verbose)
+                System.out.println("Downloading and extracting game to test with, please hold...");
 
         dT.start();
         dT.join();
@@ -46,34 +56,42 @@ public class XMMTFTPThreadTest {
         eT.join();
 
         if (fT != null && fT2 != null) {
-            System.out.println("Object initialization:\tPASSED");
+            if (verbose)
+                System.out.println("Object initialization:\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("Object initialization:\tFAILED");
+            if (verbose)
+                System.out.println("Object initialization:\t\tFAILED");
         }
 
         if (fT.GetProgess() == 0) {
-            System.out.println("GetProgress():\t\tPASSED");
+            if (verbose)
+                System.out.println("GetProgress():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("GetProgress():\t\tFAILED");
+            if (verbose)
+                System.out.println("GetProgress():\t\t\tFAILED");
         }
 
         if (fT.getGame() == g1) {
-            System.out.println("getGame():\t\tPASSED");
+            if (verbose)
+                System.out.println("getGame():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("getGame():\t\tFAILED");
+            if (verbose)
+                System.out.println("getGame():\t\t\tFAILED");
         }
 
         fT.start();
         Thread.sleep(5000);
 
         if (fT.GetProgess() > 0 && client.changeWorkingDirectory(XBOX_DIR + g1.getName())) {
-            System.out.println("start():\t\tPASSED");
+            if (verbose)
+                System.out.println("start():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("start():\t\tFAILED");
+            if (verbose)
+                System.out.println("start():\t\t\tFAILED");
         }
         
         client.changeWorkingDirectory(XBOX_DIR);
@@ -84,19 +102,23 @@ public class XMMTFTPThreadTest {
         Thread.sleep(2000);
 
         if (fT.GetProgess() == fTp && fT.paused()) {
-            System.out.println("pauseThread:\t\tPASSED");
+            if (verbose)
+                System.out.println("pauseThread:\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("pauseThread():\t\tFAILED");
+            if (verbose)
+                System.out.println("pauseThread():\t\t\tFAILED");
         }
 
         fT.resumeThread();
         Thread.sleep(2000);
         if (fT.GetProgess() > fTp && !fT.paused()) {
-            System.out.println("resumeThread():\t\tPASSED");
+            if (verbose)
+                System.out.println("resumeThread():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("resumeThread():\t\tFAILED");
+            if (verbose)
+                System.out.println("resumeThread():\t\t\tFAILED");
         }
 
         fT.interrupt();
@@ -104,10 +126,12 @@ public class XMMTFTPThreadTest {
             fT.join();
         
         if (!fT.isAlive()) {
-            System.out.println("interrupt():\t\tPASSED");
+            if (verbose)
+                System.out.println("interrupt():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("interrupt():\t\tFAILED");
+            if (verbose)
+                System.out.println("interrupt():\t\t\tFAILED");
         }
 
         fT.interrupt();
@@ -125,7 +149,7 @@ public class XMMTFTPThreadTest {
         client.logout();
         client.disconnect();
 
-        System.out.println("Total pass count: " + passCount + " out of 7");
+        System.out.println("FTPThread pass count: " + passCount + " out of " + totalPasses);
     }
 
     private static void deleteFTPFiles(FTPClient client, FTPFile dir) throws IOException {

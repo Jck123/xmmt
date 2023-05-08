@@ -5,39 +5,53 @@ import XMMT.DownloadThread;
 import XMMT.ThreadEngine;
 
 public class XMMTExtractionThreadTest {
-    public static void main(String[] args) throws InterruptedException {
-        int passCount = 0;
-        
+    private static int passCount = 0;
+    public static int totalPasses = 7;
+    private static boolean verbose = false;
+
+    public static int runTests(boolean v) throws InterruptedException{
+        verbose = v;
+        main(null);
+        return passCount;
+    }
+    public static void main(String[] args) throws InterruptedException {        
         Game g1 = new Game("https://archive.org/download/xbox_eng_romset/AMF%20Bowling%202004%20%5B%21%5D.7z");
         ThreadEngine<ExtractionThread> ee = new ThreadEngine<ExtractionThread>(ExtractionThread.class);
         DownloadThread dT = new DownloadThread(g1, ee, "Downloads/");
         ExtractionThread eT = new ExtractionThread(g1, ee, "Extracts/");
         ExtractionThread eT2 = new ExtractionThread(g1, ee);
         
-        System.out.println("Downloading game to test with, please hold...");
+        if (verbose)
+            System.out.println("Downloading game to test with, please hold...");
 
         dT.start();
         dT.join();
 
         if (eT != null && eT2 != null) {
-            System.out.println("Object initialization:\tPASSED");
+            if (verbose)
+                System.out.println("Object initialization:\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("Object initialization:\tFAILED");
+            if (verbose)
+                System.out.println("Object initialization:\t\tFAILED");
         }
 
         if (eT.GetProgess() == 0) {
-            System.out.println("GetProgress():\t\tPASSED");
+            if (verbose)
+                System.out.println("GetProgress():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("GetProgress():\t\tFAILED");
+            if (verbose)
+                System.out.println("GetProgress():\t\t\tFAILED");
         }
 
         if (eT.getGame() == g1) {
-            System.out.println("getGame():\t\tPASSED");
+            if (verbose)
+                System.out.println("getGame():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("getGame():\t\tFAILED");
+            if (verbose)
+                System.out.println("getGame():\t\t\tFAILED");
         }
 
         eT.start();
@@ -45,10 +59,12 @@ public class XMMTExtractionThreadTest {
         Thread.sleep(5000);
 
         if (eT.GetProgess() > 0 && g1.getDecompressedPath().exists()) {
-            System.out.println("start():\t\tPASSED");
+            if (verbose)
+                System.out.println("start():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("start():\t\tFAILED");
+            if (verbose)
+                System.out.println("start():\t\t\tFAILED");
         }
 
         eT.pauseThread();
@@ -56,20 +72,24 @@ public class XMMTExtractionThreadTest {
         double eTp = eT.GetProgess();
 
         if (eT.GetProgess() == eTp && eT.paused()) {
-            System.out.println("pauseThread():\t\tPASSED");
+            if (verbose)
+                System.out.println("pauseThread():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("pauseThread():\t\tFAILED");
+            if (verbose)
+                System.out.println("pauseThread():\t\t\tFAILED");
         }
 
         eT.resumeThread();
         Thread.sleep(1000);
 
         if (eT.GetProgess() > eTp && !eT.paused()) {
-            System.out.println("resumeThread():\t\tPASSED");
+            if (verbose)
+                System.out.println("resumeThread():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("resumeThread():\t\tFAILED");
+            if (verbose)
+                System.out.println("resumeThread():\t\t\tFAILED");
         }
 
         eT.interrupt();
@@ -77,14 +97,16 @@ public class XMMTExtractionThreadTest {
             eT.join();
         
         if (!eT.isAlive() && !g1.getDecompressedPath().exists() && g1.getCompressedPath().exists()) {
-            System.out.println("interrupt():\t\tPASSED");
+            if (verbose)
+                System.out.println("interrupt():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("interrupt():\t\tFAILED");
+            if (verbose)
+                System.out.println("interrupt():\t\t\tFAILED");
         }
 
         g1.deleteAllLocalFiles();
 
-        System.out.println("Total pass count: " + passCount + " out of 7");
+        System.out.println("ExtractionThread pass count: " + passCount + " out of " + totalPasses);
     }
 }

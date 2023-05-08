@@ -6,9 +6,16 @@ import XMMT.ThreadEngine;
 import java.util.HashMap;
 
 public class XMMTThreadEngineTest {
+    private static int passCount = 0;
+    public static int totalPasses = 17;
+    private static boolean verbose = false;
+
+    public static int runTests(boolean v) throws InterruptedException{
+        verbose = v;
+        main(null);
+        return passCount;
+    }
     public static void main(String[] args) throws InterruptedException{
-        int passCount = 0;
-        
         Game g1 = new Game("https://archive.org/download/xbox_eng_romset/AMF%20Bowling%202004%20%5B%21%5D.7z");
         Game g2 = new Game("https://archive.org/download/xbox_eng_romset/Advent%20Rising%20%5B%21%5D.7z");
         Game g3 = new Game("https://archive.org/download/xbox_eng_romset/Aeon%20Flux%20%5B%21%5D.7z");
@@ -34,31 +41,39 @@ public class XMMTThreadEngineTest {
         double p = (double)dE.GetProgress().values().toArray()[0];
 
         if (p > 0) {
-            System.out.println("addToQueue():\t\tPASSED");
+            if (verbose)
+                System.out.println("addToQueue():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("addToQueue():\t\tFAILED");
+            if (verbose)
+                System.out.println("addToQueue():\t\t\tFAILED");
         }
 
         if (dE.GetProgress(g5) > 0 && dE.GetProgress(g1) == -1 && p > 0) {
-            System.out.println("GetProgress():\t\tPASSED");
+            if (verbose)
+                System.out.println("GetProgress():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("GetProgress():\t\tFAILED");
+            if (verbose)
+                System.out.println("GetProgress():\t\t\tFAILED");
         }
 
         if (dE.GetProgress(g5) > 0) {
-            System.out.println("PriorityQueue:\t\tPASSED");
+            if (verbose)
+                System.out.println("PriorityQueue:\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("PriorityQueue:\t\tFAILED");
+            if (verbose)
+                System.out.println("PriorityQueue:\t\t\tFAILED");
         }
 
         if (dE.GetProgress().size() == 1) {
-            System.out.println("DOWNLOAD_LIMIT:\t\tPASSED");
+            if (verbose)
+                System.out.println("DOWNLOAD_LIMIT:\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("DOWNLOAD_LIMIT:\t\tFAILED");
+            if (verbose)
+                System.out.println("DOWNLOAD_LIMIT:\t\t\tFAILED");
         }
 
         dE.setDownloadLimit(2);
@@ -66,10 +81,12 @@ public class XMMTThreadEngineTest {
         HashMap<Game, Double> prog = dE.GetProgress();
 
         if (prog.size() == 2 && prog.get(g5) > 0 && prog.get(g3) > 0) {
-            System.out.println("setDownloadLimit():\tPASSED");
+            if (verbose)
+                System.out.println("setDownloadLimit():\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("setDownloadLimit():\tFAILED");
+            if (verbose)
+                System.out.println("setDownloadLimit():\t\tFAILED");
         }
 
         
@@ -80,20 +97,24 @@ public class XMMTThreadEngineTest {
         Thread.sleep(1000);
 
         if (dE.GetProgress(g5) == p && dE.GetProgress(g3) > p2) {
-            System.out.println("pause():\t\tPASSED");
+            if (verbose)
+                System.out.println("pause():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("pause():\t\tFAILED");
+            if (verbose)
+                System.out.println("pause():\t\t\tFAILED");
         }
 
         dE.start(g5);
         Thread.sleep(2000);
 
         if (dE.GetProgress(g5) > p) {
-            System.out.println("start():\t\tPASSED");
+            if (verbose)
+                System.out.println("start():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("start():\t\tFAILED");
+            if (verbose)
+                System.out.println("start():\t\t\tFAILED");
         }
 
         dE.pauseAll();
@@ -103,27 +124,33 @@ public class XMMTThreadEngineTest {
         
 
         if (prog.equals(dE.GetProgress())) {
-            System.out.println("pauseAll():\t\tPASSED");
+            if (verbose)
+                System.out.println("pauseAll():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("pauseAll():\t\tFAILED");
+            if (verbose)
+                System.out.println("pauseAll():\t\t\tFAILED");
         }
 
         dE.startAll();
         Thread.sleep(2000);
 
         if (!dE.GetProgress().equals(prog)) {
-            System.out.println("startAll():\t\tPASSED");
+            if (verbose)
+                System.out.println("startAll():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("startAll():\t\tFAILED");
+            if (verbose)
+                System.out.println("startAll():\t\t\tFAILED");
         }
 
         if (dE.GetProgress(g5) > prog.get(g5) && dE.GetProgress(g3) > prog.get(g3)) {
-            System.out.println("Multithreading:\t\tPASSED");
+            if (verbose)
+                System.out.println("Multithreading:\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("Multithreading:\t\tFAILED");
+            if (verbose)
+                System.out.println("Multithreading:\t\t\tFAILED");
         }
 
         dE.setPriorityLevel(g1, 10);
@@ -132,66 +159,81 @@ public class XMMTThreadEngineTest {
         Thread.sleep(2000);
 
         if (dE.GetProgress(g1) > 0 && dE.GetProgress(g5) == -1) {
-            System.out.println("removeFromQueue():\tPASSED");
+            if (verbose)
+                System.out.println("removeFromQueue():\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("removeFromQueue():\tFAILED");
+            if (verbose)
+                System.out.println("removeFromQueue():\t\tFAILED");
         }
 
-        System.out.println("Waiting for a game to finish downloading, please hold...");
+        if (verbose)
+            System.out.println("Waiting for a game to finish downloading, please hold...");
         dE.join();
         Thread.sleep(2000);
 
         if (dE.peek() != null) {
-            System.out.println("peek():\t\t\tPASSED");
+            if (verbose)
+                System.out.println("peek():\t\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("peek():\t\t\tFAILED");
+            if (verbose)
+                System.out.println("peek():\t\t\t\tFAILED");
         }
 
         Game tempG = dE.poll();
 
         if (dE.peek() == null && tempG != null) {
-            System.out.println("poll():\t\t\tPASSED");
+            if (verbose)
+                System.out.println("poll():\t\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("poll():\t\t\tFAILED");
+            if (verbose)
+                System.out.println("poll():\t\t\t\tFAILED");
         }
 
         if (dE.GetProgress(g5) > 0 && tempG != null) {
-            System.out.println("join():\t\t\tPASSED");
+            if (verbose)
+                System.out.println("join():\t\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("join():\t\t\tFAILED");
+            if (verbose)
+                System.out.println("join():\t\t\t\tFAILED");
         }
 
         dE.stopAll();
         Thread.sleep(1000);
 
         if(dE.GetProgress().isEmpty()) {
-            System.out.println("stopAll():\t\tPASSED");
+            if (verbose)
+                System.out.println("stopAll():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("stopAll():\t\tFAILED");
+            if (verbose)
+                System.out.println("stopAll():\t\t\tFAILED");
         }
 
         dE.setPriorityLevel(g4, -1);
 
         if(g4.getPriorityLevel() == -1) {
-            System.out.println("setPriorityLevel():\tPASSED");
+            if (verbose)
+                System.out.println("setPriorityLevel():\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("setPriorityLevel():\tFAILED");
+            if (verbose)
+                System.out.println("setPriorityLevel():\t\tFAILED");
         }
 
         dE.clearAll();
         Thread.sleep(2000);
 
         if (dE.GetProgress().size() == 0) {
-            System.out.println("clearAll():\t\tPASSED");
+            if (verbose)
+                System.out.println("clearAll():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("clearAll():\t\tFAILED");
+            if (verbose)
+                System.out.println("clearAll():\t\t\tFAILED");
         }
 
         g1.deleteAllLocalFiles();
@@ -199,6 +241,6 @@ public class XMMTThreadEngineTest {
         g3.deleteAllLocalFiles();
         g4.deleteAllLocalFiles();
         g5.deleteAllLocalFiles();
-        System.out.println("Total pass count: " + passCount + " out of 17");
+        System.out.println("ThreadEngine pass count: " + passCount + " out of " + totalPasses);
     }
 }

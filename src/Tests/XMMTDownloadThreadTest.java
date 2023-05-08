@@ -4,9 +4,16 @@ import XMMT.ThreadEngine;
 import XMMT.DownloadThread;
 
 public class XMMTDownloadThreadTest {
-    public static void main(String[] args) throws InterruptedException {
-        int passCount = 0;
-        
+    private static int passCount = 0;
+    public static int totalPasses = 7;
+    private static boolean verbose = false;
+
+    public static int runTests(boolean v) throws InterruptedException {
+        verbose = v;
+        main(null);
+        return passCount;
+    }
+    public static void main(String[] args) throws InterruptedException {        
         Game g1 = new Game("https://archive.org/download/xbox_eng_romset/AMF%20Bowling%202004%20%5B%21%5D.7z");
         ThreadEngine<DownloadThread> de = new ThreadEngine<DownloadThread>(DownloadThread.class);
         DownloadThread dT = new DownloadThread(g1, de, "Downloads/");
@@ -14,24 +21,30 @@ public class XMMTDownloadThreadTest {
 
 
         if (dT != null && dT2 != null) {
-            System.out.println("Object initialization:\tPASSED");
+            if (verbose)
+                System.out.println("Object initialization:\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("Object initialization:\tFAILED");
+            if (verbose)
+                System.out.println("Object initialization:\t\tFAILED");
         }
 
         if (dT.GetProgess() == 0) {
-            System.out.println("GetProgress():\t\tPASSED");
+            if (verbose)
+                System.out.println("GetProgress():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("GetProgress():\t\tFAILED");
+            if (verbose)
+                System.out.println("GetProgress():\t\t\tFAILED");
         }
 
         if (dT.getGame() == g1) {
-            System.out.println("getGame():\t\tPASSED");
+            if (verbose)
+                System.out.println("getGame():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("getGame():\t\tFAILED");
+            if (verbose)
+                System.out.println("getGame():\t\t\tFAILED");
         }
 
         dT.start();
@@ -39,10 +52,12 @@ public class XMMTDownloadThreadTest {
         Thread.sleep(5000);
 
         if (dT.GetProgess() > 0 && g1.getCompressedPath().exists()) {
-            System.out.println("start():\t\tPASSED");
+            if (verbose)
+                System.out.println("start():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("start():\t\tFAILED");
+            if (verbose)
+                System.out.println("start():\t\t\tFAILED");
         }
 
         dT.pauseThread();
@@ -50,20 +65,24 @@ public class XMMTDownloadThreadTest {
         double dTp = dT.GetProgess();
 
         if (dT.GetProgess() == dTp && dT.paused()) {
-            System.out.println("pauseThread():\t\tPASSED");
+            if (verbose)
+                System.out.println("pauseThread():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("pauseThread():\t\tFAILED");
+            if (verbose)
+                System.out.println("pauseThread():\t\t\tFAILED");
         }
 
         dT.resumeThread();
         Thread.sleep(1000);
 
         if (dT.GetProgess() > dTp && !dT.paused()) {
-            System.out.println("resumeThread():\t\tPASSED");
+            if (verbose)
+                System.out.println("resumeThread():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("resumeThread():\t\tFAILED");
+            if (verbose)
+                System.out.println("resumeThread():\t\t\tFAILED");
         }
 
         dT.interrupt();
@@ -71,12 +90,14 @@ public class XMMTDownloadThreadTest {
             dT.join();
 
         if (!dT.isAlive() && !g1.getCompressedPath().exists()) {
-            System.out.println("interrupt():\t\tPASSED");
+            if (verbose)
+                System.out.println("interrupt():\t\t\tPASSED");
             passCount++;
         } else {
-            System.out.println("interrupt():\t\tFAILED");
+            if (verbose)
+                System.out.println("interrupt():\t\t\tFAILED");
         }
 
-        System.out.println("Total pass count: " + passCount + " out of 7");
+        System.out.println("DownloadThread pass count: " + passCount + " out of " + totalPasses);
     }
 }
