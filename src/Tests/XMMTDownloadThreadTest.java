@@ -49,7 +49,7 @@ public class XMMTDownloadThreadTest {
         Thread.sleep(100);
         double dTp = dT.GetProgess();
 
-        if (dT.GetProgess() == dTp && dT.paused() == true) {
+        if (dT.GetProgess() == dTp && dT.paused()) {
             System.out.println("pauseThread():\t\tPASSED");
             passCount++;
         } else {
@@ -59,7 +59,7 @@ public class XMMTDownloadThreadTest {
         dT.resumeThread();
         Thread.sleep(1000);
 
-        if (dT.GetProgess() > dTp && dT.paused() == false) {
+        if (dT.GetProgess() > dTp && !dT.paused()) {
             System.out.println("resumeThread():\t\tPASSED");
             passCount++;
         } else {
@@ -69,7 +69,6 @@ public class XMMTDownloadThreadTest {
         dT.interrupt();
         if (dT.isAlive())
             dT.join();
-        g1.deleteCompressedFile();
 
         if (!dT.isAlive() && !g1.getCompressedPath().exists()) {
             System.out.println("interrupt():\t\tPASSED");

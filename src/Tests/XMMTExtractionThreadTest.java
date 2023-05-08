@@ -55,7 +55,7 @@ public class XMMTExtractionThreadTest {
         Thread.sleep(100);
         double eTp = eT.GetProgess();
 
-        if (eT.GetProgess() == eTp && eT.paused() == true) {
+        if (eT.GetProgess() == eTp && eT.paused()) {
             System.out.println("pauseThread():\t\tPASSED");
             passCount++;
         } else {
@@ -65,7 +65,7 @@ public class XMMTExtractionThreadTest {
         eT.resumeThread();
         Thread.sleep(1000);
 
-        if (eT.GetProgess() > eTp && eT.paused() == false) {
+        if (eT.GetProgess() > eTp && !eT.paused()) {
             System.out.println("resumeThread():\t\tPASSED");
             passCount++;
         } else {
@@ -75,8 +75,7 @@ public class XMMTExtractionThreadTest {
         eT.interrupt();
         if (eT.isAlive())
             eT.join();
-        g1.deleteDecompressedFiles();
-
+        
         if (!eT.isAlive() && !g1.getDecompressedPath().exists() && g1.getCompressedPath().exists()) {
             System.out.println("interrupt():\t\tPASSED");
             passCount++;
