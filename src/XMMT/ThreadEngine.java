@@ -12,6 +12,7 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
     private String[] args;
     private boolean paused = true;
     private boolean joined = false;
+    private EngineInterface linkedEngine = null;
 
     public ThreadEngine(Class<T> clz) {
         inPQueue = new PriorityQueue<Game>(new GameComparator());
@@ -19,6 +20,14 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
         processingList = new ArrayList<T>();
         clazz = clz;
         args = null;
+    }
+
+    public ThreadEngine(Class<T> clz, String... a) {
+        inPQueue = new PriorityQueue<Game>(new GameComparator());
+        outPQueue = new PriorityQueue<Game>(new GameComparator());
+        processingList = new ArrayList<T>();
+        clazz = clz;
+        args = a;
     }
 
     public ThreadEngine(Class<T> clz, int downLimit) {
@@ -177,6 +186,8 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
     public void refresh() {
         if (paused)
             return;
+        if (inPQueue.isEmpty() && processingList.isEmpty())
+            paused = true;
         while(!inPQueue.isEmpty() && processingList.size() < DOWNLOAD_LIMIT) {
             try {
                 T t = null;
@@ -210,7 +221,12 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
     public void completeProcess(XMMTThread t) {
         Game g = t.getGame();
         processingList.remove(t);
-        outPQueue.add(g);
+        if (linkedEngine != null) {
+            linkedEngine.addToQueue(g);
+            linkedEngine.startAll();
+        }
+        else
+            outPQueue.add(g);
         refresh();
         joined = false;
     }
@@ -232,5 +248,9 @@ public class ThreadEngine<T extends XMMTThread> implements EngineInterface{
             outPQueue.remove(g);
             outPQueue.add(g);
         }
+    }
+
+    public void linkEngine(EngineInterface engine) {
+        linkedEngine = engine;
     }
 }

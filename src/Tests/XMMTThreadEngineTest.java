@@ -1,14 +1,15 @@
 package Tests;
 import XMMT.Game;
 import XMMT.DownloadThread;
+import XMMT.ExtractionThread;
 import XMMT.ThreadEngine;
 
 import java.util.HashMap;
 
 public class XMMTThreadEngineTest {
     private static int passCount = 0;
-    public static int totalPasses = 17;
-    private static boolean verbose = false;
+    public static int totalPasses = 18;
+    private static boolean verbose = true;
 
     public static int runTests(boolean v) throws InterruptedException{
         verbose = v;
@@ -156,7 +157,7 @@ public class XMMTThreadEngineTest {
         dE.setPriorityLevel(g1, 10);
         dE.removeFromQueue(g5);
         dE.addToQueue(g5);
-        Thread.sleep(2000);
+        Thread.sleep(4000);
 
         if (dE.GetProgress(g1) > 0 && dE.GetProgress(g5) == -1) {
             if (verbose)
@@ -235,6 +236,28 @@ public class XMMTThreadEngineTest {
             if (verbose)
                 System.out.println("clearAll():\t\t\tFAILED");
         }
+
+        g1.deleteAllLocalFiles();
+        dE.addToQueue(g1);
+        ThreadEngine<ExtractionThread> eT = new ThreadEngine<ExtractionThread>(ExtractionThread.class, "Extracts/");
+        dE.linkEngine(eT);
+        dE.startAll();
+        Thread.sleep(2000);
+        dE.join();
+        Thread.sleep(2000);
+
+        if (eT.GetProgress(g1) > 0 && g1.getDecompressedPath().exists() && dE.peek() == null) {
+            if (verbose)
+                System.out.println("linkEngine():\t\t\tPASSED");
+            passCount++;
+        } else {
+            if (verbose)
+                System.out.println("linkEngine():\t\t\tFAILED");
+        }
+
+        dE.clearAll();
+        eT.clearAll();
+        Thread.sleep(2000);
 
         g1.deleteAllLocalFiles();
         g2.deleteAllLocalFiles();
