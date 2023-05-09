@@ -11,3 +11,6 @@ This project, in it's current state, is not capable of running on it's own witho
 ### Licesning
 
 As of now, I do not wish to share this project with anyone. Please do not copy any of the intellectual property within this repository.
+
+### Video Demo
+[![XMMT Video Demo](https://img.youtube.com/vi/a7E1ftJmdXQ/0.jpg)](https://www.youtube.com/watch?v=a7E1ftJmdXQ)
