@@ -89,12 +89,17 @@ public class Game {
     public void setPriorityLevel(int newNum) {priorityLevel = newNum;}
 
     public void deleteCompressedFile() {
-        if (compressedPath != null)
-            compressedPath.delete();
+        if (compressedPath == null)
+            return;
+        compressedPath.delete();
+        compressedPath = null;
     }
 
     public void deleteDecompressedFiles() {
+        if (decompressedPath == null)
+            return;
         deleteDirectory(decompressedPath);
+        decompressedPath = null;
     }
 
     private void deleteDirectory(File dir) {
