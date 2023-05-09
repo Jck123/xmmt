@@ -70,11 +70,11 @@ public class XMMTThreadEngineTest {
 
         if (dE.GetProgress().size() == 1) {
             if (verbose)
-                System.out.println("DOWNLOAD_LIMIT:\t\t\tPASSED");
+                System.out.println("CONCURRENT_LIMIT:\t\t\tPASSED");
             passCount++;
         } else {
             if (verbose)
-                System.out.println("DOWNLOAD_LIMIT:\t\t\tFAILED");
+                System.out.println("CONCURRENT_LIMIT:\t\t\tFAILED");
         }
 
         dE.setConcurrentLimit(2);

@@ -96,7 +96,7 @@ public class XMMTExtractionThreadTest {
         if (eT.isAlive())
             eT.join();
         
-        if (!eT.isAlive() && !g1.getDecompressedPath().exists() && g1.getCompressedPath().exists()) {
+        if (!eT.isAlive() && g1.getDecompressedPath() == null && g1.getCompressedPath().exists()) {
             if (verbose)
                 System.out.println("interrupt():\t\t\tPASSED");
             passCount++;

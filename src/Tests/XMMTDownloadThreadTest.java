@@ -89,7 +89,7 @@ public class XMMTDownloadThreadTest {
         if (dT.isAlive())
             dT.join();
 
-        if (!dT.isAlive() && !g1.getCompressedPath().exists()) {
+        if (!dT.isAlive() && g1.getCompressedPath() == null) {
             if (verbose)
                 System.out.println("interrupt():\t\t\tPASSED");
             passCount++;
