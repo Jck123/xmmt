@@ -43,7 +43,7 @@ public class Game {
         priorityLevel = 0;
 
         try {
-            sourceURL = new URL(strURL);
+            sourceURL = new URL(strURL);        //Generates name of game based on name of input URL
             strURL = URLDecoder.decode(strURL, StandardCharsets.UTF_8);
             name = strURL.substring(strURL.lastIndexOf("/") + 1, strURL.lastIndexOf("."));
         } catch (MalformedURLException e) {
@@ -51,22 +51,22 @@ public class Game {
         }
     }
 
-    public String getName() {return name;}
+    public String getName() {return name;}      //Name getter and setter
     public void setName(String newName) {name = newName;}
 
-    public URL getURL() {return sourceURL;}
+    public URL getURL() {return sourceURL;}     //URL getter and setters
     public void setURL(URL newURL) {sourceURL = newURL;}
     public void setURL(String newURL) {
         try {
-            sourceURL = new URL(newURL);
+            sourceURL = new URL(newURL);        //Verifies if URL is valid
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
     }
 
-    public File getCompressedPath() {return compressedPath;}
+    public File getCompressedPath() {return compressedPath;}    //CompressedPath getter and setters
     public void setCompressedPath(File newPath) {
-        if (newPath.isDirectory())
+        if (newPath.isDirectory())                              //Because the compressed file is expected to be a single file, input cannot be a directory
             throw new IllegalArgumentException("This path is a directory");
         compressedPath = newPath;
     }
@@ -77,7 +77,7 @@ public class Game {
         compressedPath = newFile;
     }
 
-    public File getDecompressedPath() {return decompressedPath;}
+    public File getDecompressedPath() {return decompressedPath;}        //DecompressedPath getter and setters
     public void setDecompressedPath(File newPath) {
         decompressedPath = newPath;
     }
@@ -85,17 +85,17 @@ public class Game {
         decompressedPath = new File(newPath);
     }
     
-    public int getPriorityLevel() {return priorityLevel;}
+    public int getPriorityLevel() {return priorityLevel;}               //Priority level is a measure of how important the game is(typically set by user)
     public void setPriorityLevel(int newNum) {priorityLevel = newNum;}
 
-    public void deleteCompressedFile() {
+    public void deleteCompressedFile() {            //Deletes compressed file if it exists
         if (compressedPath == null)
             return;
         compressedPath.delete();
         compressedPath = null;
     }
 
-    public void deleteDecompressedFiles() {
+    public void deleteDecompressedFiles() {         //Recursively deletes decompressed files if they exist
         if (decompressedPath == null)
             return;
         deleteDirectory(decompressedPath);
@@ -111,12 +111,12 @@ public class Game {
         }
     }
 
-    public void deleteAllLocalFiles() {
+    public void deleteAllLocalFiles() {             //Deletes all files(compressed and decompressed)
         deleteCompressedFile();
         deleteDecompressedFiles();
     }
 
-    @Override
+    @Override                                       //Declares how two game objects will be compared
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;

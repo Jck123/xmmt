@@ -21,28 +21,29 @@ public class FTPThread extends XMMTThread {
 
     public FTPThread(Game g, EngineInterface e, String... a) {
         super(g, e, a);
+        //Must have 3 or 4 arguments, the destination IP, username, and password
         if (a.length < 3 || a.length > 4)
             throw new IllegalArgumentException();
     }
 
     public void run() {
+        //Assigns arguments as necessary
         String XBOX_IP = args[0];
         String username = args[1];
         String password = args[2];
         String destPath;
 
-        if (args.length == 4) {
+        //Defaults to '/C/' if directory is not assigned
+        if (args.length == 4)
             destPath = args[3];
-            File dirTester = new File(destPath);
-            if (!dirTester.exists())
-                dirTester.mkdirs();
-        } else
+        else
             destPath = "/C/";
 
         FTPClient client = new FTPClient();
         String dir  = game.getDecompressedPath().toString();
 
         try {
+            //Obtains full list of files needing to be transferred to FTP server
             Stream<Path> pathstream = Files.walk(Paths.get(dir));
             List<Path> pathList = pathstream.collect(Collectors.toList());
             pathstream.close();
@@ -50,12 +51,13 @@ public class FTPThread extends XMMTThread {
             Double filesTransferred = 0.0;
             Double fileCount = (double)pathList.size();
 
+            //Connects to FTP server
             client.connect(XBOX_IP);
             client.login(username, password);
 
             for(Path p : pathList) {
                 File currentFile = p.toFile();
-                if (currentFile.isDirectory())
+                if (currentFile.isDirectory())      //Skips if directory
                     continue;
 
                 FileInputStream in = null;
@@ -63,7 +65,7 @@ public class FTPThread extends XMMTThread {
                     boolean matchFound = false;
 
                     if (client.changeWorkingDirectory(destPath + p.normalize().getParent().toString()) /*&& ftpF.getSize() == currentFile.length()*/) {
-                        for(FTPFile ftpF : client.listFiles()) {
+                        for(FTPFile ftpF : client.listFiles()) {                //Checks if there is already a file on the server
                             if (ftpF.getName().equals(p.getFileName().toString()) ) {
                                 matchFound = true;
                                 break;
@@ -71,27 +73,19 @@ public class FTPThread extends XMMTThread {
                         }
                     }
 
-                    if (!matchFound) {
-                        //System.out.println("Skipping file " + p);
-                        //continue;
-                    
-
-                        //client.changeWorkingDirectory(destPath);
+                    if (!matchFound) {          //File is skipped if a match is found
                         String filename = p.normalize().toString();
                         in = new FileInputStream(filename);
-                        filename = destPath + filename.substring(filename.indexOf(game.getName()));
-                        //System.out.println(filename);
-            
-                        //System.out.println("Transferring [" + currentFile.length() + "] " + in.ge + " --> " + client.printWorkingDirectory());
+                        filename = destPath + filename.substring(filename.indexOf(game.getName())); //Sets up directory of where the file will go
 
-                        client.setFileType(FTP.BINARY_FILE_TYPE);
-                        client.storeFile(filename, in);
+                        client.setFileType(FTP.BINARY_FILE_TYPE);       //Sets file type(VERY IMPORTANT)
+                        client.storeFile(filename, in);                 //Sends file over
                     }
                     filesTransferred++;
                     progress = (filesTransferred / fileCount) * 100;
-                    while(paused)
+                    while(paused)                                       //Runs if user requests thread to pause
                         Thread.sleep(1000);
-                    if (isInterrupted()) break;
+                    if (isInterrupted()) break;                         //Runs if user requests thread to stop
                 } catch (IOException e) {
                     e.printStackTrace();
                     sendFailFlag();
@@ -101,10 +95,10 @@ public class FTPThread extends XMMTThread {
                 }
             }
             client.logout();
-            if (!isInterrupted())
+            if (!isInterrupted())                                       //If all runs smoothly, informs engine the transfer was completed
                 sendCompleteFlag();
             else
-                sendFailFlag();
+                sendFailFlag();                                         //Tells engine of a failure taking place
         } catch (Exception e) {
             e.printStackTrace();
             sendFailFlag();

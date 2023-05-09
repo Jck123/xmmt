@@ -30,30 +30,37 @@ public abstract class XMMTThread extends Thread{
         return progress;
     }
 
+    //Sends signal for thread to pause
     public final void pauseThread() {
         paused = true;
     }
 
+    //Send signal for thread to resume
     public final void resumeThread() {
         paused = false;
     }
 
+    //Returns if thread is currently paused
     public final boolean paused() {
         return paused;
     }
 
+    //Returns game thread is working on
     public final Game getGame() {
         return game;
     }
 
+    //Sets args of thread
     public final void setArgs(String... a) {
         args = a;
     }
 
+    //Sends flag to engine that thread is complete
     public final void sendCompleteFlag() {
         engine.completeProcess(this);
     }
 
+    //Sends flag to engine that thread has failed
     public final void sendFailFlag() {
         engine.failProcess(this);
     }

@@ -77,17 +77,17 @@ public class XMMTThreadEngineTest {
                 System.out.println("DOWNLOAD_LIMIT:\t\t\tFAILED");
         }
 
-        dE.setDownloadLimit(2);
+        dE.setConcurrentLimit(2);
         Thread.sleep(4000);
         HashMap<Game, Double> prog = dE.GetProgress();
 
         if (prog.size() == 2 && prog.get(g5) > 0 && prog.get(g3) > 0) {
             if (verbose)
-                System.out.println("setDownloadLimit():\t\tPASSED");
+                System.out.println("setConcurrentLimit():\t\tPASSED");
             passCount++;
         } else {
             if (verbose)
-                System.out.println("setDownloadLimit():\t\tFAILED");
+                System.out.println("setConcurrentLimit():\t\tFAILED");
         }
 
         
