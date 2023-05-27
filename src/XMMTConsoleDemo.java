@@ -9,7 +9,7 @@ import XMMT.ExtractionThread;
 import XMMT.FTPThread;
 import XMMT.Game;
 
-public class XMMTDemo {
+public class XMMTConsoleDemo {
     public static void main(String[] args) throws InterruptedException {
         Scanner input = new Scanner(System.in);
         
